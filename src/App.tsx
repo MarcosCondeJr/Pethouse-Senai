@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import PetsPage from "./pages/PetsPage";
 import VaccinationCardPage from "./pages/VaccinationCardPage";
 import ReminderPage from "./pages/ReminderPage";
+import AssistantPage from "./pages/AssistantPage";
 import { PetProvider } from "./contexts/PetContext";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/pets" element={<PetsPage />} />
             <Route path="/vaccination-card/:petId?" element={<VaccinationCardPage />} />
             <Route path="/reminders" element={<ReminderPage />} />
+            <Route path="/assistant" element={<AssistantPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

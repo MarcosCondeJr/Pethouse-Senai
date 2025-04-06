@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Assistant = () => {
   return (
@@ -72,9 +73,11 @@ export const Assistant = () => {
                 <p className="text-sm text-gray-500">
                   O assistente fornece orientações iniciais, mas não substitui uma consulta veterinária.
                 </p>
-                <Button className="bg-primary hover:bg-primary-600">
-                  Iniciar conversa
-                </Button>
+                <Link to="/assistant">
+                  <Button className="bg-primary hover:bg-primary-600">
+                    Iniciar conversa
+                  </Button>
+                </Link>
               </div>
             </div>
           </Card>

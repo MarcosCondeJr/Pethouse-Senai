@@ -10,7 +10,7 @@ import { Footer } from "@/components/Footer";
 import { usePet } from "@/contexts/PetContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dog, Syringe, Bell } from "lucide-react";
+import { Dog, Syringe, Bell, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -47,7 +47,7 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold text-center mb-8">Painel Pet House</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {/* Pet summary card */}
               <Card className="p-6">
                 <div className="flex items-center gap-4 mb-4">
@@ -143,6 +143,30 @@ const Index = () => {
                 <Link to="/reminders">
                   <Button variant="secondary" className="w-full mt-4">
                     {reminders.length === 0 ? "Criar Lembretes" : "Gerenciar Lembretes"}
+                  </Button>
+                </Link>
+              </Card>
+              
+              {/* Assistant card */}
+              <Card className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="bg-primary/10 p-3 rounded-full">
+                    <MessageCircle className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Assistente Virtual</h3>
+                </div>
+                
+                <p className="mb-4 text-gray-600">Tire suas dúvidas sobre a saúde do seu pet e receba orientações imediatas.</p>
+                
+                <div className="bg-gray-50 p-3 rounded-md mb-4">
+                  <p className="text-sm italic">
+                    "O assistente virtual pode ajudar a identificar sintomas e avaliar quando é necessário buscar atendimento veterinário."
+                  </p>
+                </div>
+                
+                <Link to="/assistant">
+                  <Button className="w-full">
+                    Conversar com o Assistente
                   </Button>
                 </Link>
               </Card>

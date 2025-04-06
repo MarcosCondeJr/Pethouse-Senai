@@ -36,8 +36,8 @@ export const Navigation = () => {
             <Link to="/" className="hover:text-primary font-medium">Início</Link>
             <Link to="/pets" className="hover:text-primary font-medium">Meus Pets</Link>
             <Link to="/reminders" className="hover:text-primary font-medium">Lembretes</Link>
+            <Link to="/assistant" className="hover:text-primary font-medium">Assistente</Link>
             <a href="#features" className="hover:text-primary font-medium">Recursos</a>
-            <a href="#assistant" className="hover:text-primary font-medium">Assistente</a>
           </nav>
 
           <div className="hidden md:flex items-center">
@@ -102,19 +102,19 @@ export const Navigation = () => {
           >
             Lembretes
           </Link>
+          <Link
+            to="/assistant"
+            className="block px-3 py-2 rounded-md hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Assistente
+          </Link>
           <a
             href="#features"
             className="block px-3 py-2 rounded-md hover:bg-gray-100"
             onClick={() => setIsMenuOpen(false)}
           >
             Recursos
-          </a>
-          <a
-            href="#assistant"
-            className="block px-3 py-2 rounded-md hover:bg-gray-100"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Assistente
           </a>
           <div className="pt-4">
             <Button className="w-full">Entrar</Button>
