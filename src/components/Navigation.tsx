@@ -1,164 +1,126 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Bell, Calendar, Dog, Menu, MessageCircle, User, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center py-4">
-        <div className="flex items-center gap-2">
-          <Dog className="h-8 w-8 text-primary" />
-          <span className="font-display font-bold text-xl md:text-2xl text-primary">
-            PET HOUSE
-          </span>
-        </div>
-
-        {/* Mobile menu button */}
-        <button 
-          onClick={toggleMenu} 
-          className="md:hidden p-2 rounded-md hover:bg-gray-100"
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? (
-            <X className="h-6 w-6 text-primary" />
-          ) : (
-            <Menu className="h-6 w-6 text-primary" />
-          )}
-        </button>
-
-        {/* Desktop navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <NavLinks />
-          <div className="flex items-center gap-2">
-            <Button 
-              onClick={() => setShowLogin(true)}
-              variant="outline" 
-              className="font-medium"
-            >
-              Entrar
-            </Button>
-            <Button className="font-medium bg-primary hover:bg-primary-600">
-              Cadastrar
-            </Button>
+    <header className="bg-white border-b sticky top-0 z-40">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="bg-primary rounded-full w-8 h-8 flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-white w-5 h-5"
+                >
+                  <path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .08.703 1.725 1.722 3.656 1 1.261-.472 1.96-1.45 2.344-2.5M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5M8 14v.5M16 14v.5M11.25 16.25h1.5L12 17l-.75-.75z" />
+                  <path d="M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444c0-1.061-.162-2.2-.493-3.309m-9.243-6.082A8.801 8.801 0 0 1 12 5c.78 0 1.5.108 2.161.306" />
+                </svg>
+              </div>
+              <span className="font-bold text-xl tracking-tight text-primary">PetHouse</span>
+            </Link>
           </div>
-        </nav>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-8 text-gray-700">
+            <Link to="/" className="hover:text-primary font-medium">Início</Link>
+            <Link to="/pets" className="hover:text-primary font-medium">Meus Pets</Link>
+            <Link to="/reminders" className="hover:text-primary font-medium">Lembretes</Link>
+            <a href="#features" className="hover:text-primary font-medium">Recursos</a>
+            <a href="#assistant" className="hover:text-primary font-medium">Assistente</a>
+          </nav>
+
+          <div className="hidden md:flex items-center">
+            <Button>Entrar</Button>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              className="text-gray-700 hover:text-primary"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Mobile navigation */}
-      <div
-        className={cn(
-          "md:hidden absolute w-full bg-white shadow-md transition-all duration-300 ease-in-out",
-          isMenuOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden"
-        )}
-      >
-        <div className="container mx-auto flex flex-col gap-4">
-          <MobileNavLinks />
-          <div className="flex flex-col gap-2 mt-2">
-            <Button 
-              onClick={() => {
-                setShowLogin(true);
-                setIsMenuOpen(false);
-              }}
-              variant="outline" 
-              className="w-full font-medium"
-            >
-              Entrar
-            </Button>
-            <Button className="w-full font-medium bg-primary hover:bg-primary-600">
-              Cadastrar
-            </Button>
+      {/* Mobile Menu */}
+      <div className={`md:hidden ${isMenuOpen ? "block" : "hidden"}`}>
+        <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+          <Link
+            to="/"
+            className="block px-3 py-2 rounded-md hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Início
+          </Link>
+          <Link
+            to="/pets"
+            className="block px-3 py-2 rounded-md hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Meus Pets
+          </Link>
+          <Link
+            to="/reminders"
+            className="block px-3 py-2 rounded-md hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Lembretes
+          </Link>
+          <a
+            href="#features"
+            className="block px-3 py-2 rounded-md hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Recursos
+          </a>
+          <a
+            href="#assistant"
+            className="block px-3 py-2 rounded-md hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Assistente
+          </a>
+          <div className="pt-4">
+            <Button className="w-full">Entrar</Button>
           </div>
         </div>
       </div>
-
-      {/* Login Dialog */}
-      <Dialog open={showLogin} onOpenChange={setShowLogin}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Acesse sua conta</DialogTitle>
-            <DialogDescription>
-              Entre com seus dados para acessar o sistema Pet House
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-1 gap-2">
-              <label htmlFor="email" className="text-sm font-medium">E-mail</label>
-              <input
-                id="email"
-                type="email"
-                className="border rounded-md p-2"
-                placeholder="exemplo@email.com"
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-2">
-              <label htmlFor="password" className="text-sm font-medium">Senha</label>
-              <input
-                id="password"
-                type="password"
-                className="border rounded-md p-2"
-                placeholder="********"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Button className="w-full bg-primary hover:bg-primary-600">Entrar</Button>
-            <div className="text-center text-sm text-gray-500 mt-2">
-              Não tem uma conta? <a href="#" className="text-primary hover:underline">Cadastre-se</a>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </header>
-  );
-};
-
-const navItems = [
-  { name: "Início", href: "#", icon: <Dog className="h-5 w-5" /> },
-  { name: "Lembretes", href: "#reminders", icon: <Bell className="h-5 w-5" /> },
-  { name: "Calendário", href: "#calendar", icon: <Calendar className="h-5 w-5" /> },
-  { name: "Guias", href: "#guides", icon: <MessageCircle className="h-5 w-5" /> },
-  { name: "Perfil", href: "#profile", icon: <User className="h-5 w-5" /> },
-];
-
-const NavLinks = () => {
-  return (
-    <>
-      {navItems.map((item) => (
-        <a
-          key={item.name}
-          href={item.href}
-          className="flex items-center gap-1 text-gray-700 hover:text-primary transition-colors font-medium"
-        >
-          {item.name}
-        </a>
-      ))}
-    </>
-  );
-};
-
-const MobileNavLinks = () => {
-  return (
-    <>
-      {navItems.map((item) => (
-        <a
-          key={item.name}
-          href={item.href}
-          className="flex items-center gap-2 p-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md transition-colors font-medium"
-        >
-          {item.icon}
-          {item.name}
-        </a>
-      ))}
-    </>
   );
 };
