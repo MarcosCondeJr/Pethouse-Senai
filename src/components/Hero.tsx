@@ -4,11 +4,11 @@ import { ArrowRight } from "lucide-react";
 
 export const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-r from-[#ff9d6e] to-[#ffb88c] py-16 md:py-24">
+    <section className="relative bg-gradient-to-r from-accent to-accent-200 py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col gap-6 animate-fade-in">
-            <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-primary-800 font-medium mb-2">
+            <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-white font-medium mb-2">
               🐾 Cuide do seu melhor amigo
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
@@ -74,7 +74,7 @@ const StatCard = ({ number, text, color }: StatCardProps) => {
   const bgColor = {
     primary: "bg-primary",
     secondary: "bg-secondary",
-    accent: "bg-[#F97316]",
+    accent: "bg-accent",
   };
 
   return (

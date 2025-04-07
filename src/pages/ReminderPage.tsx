@@ -15,10 +15,29 @@ import { toast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
 import { Dog, Cat, Syringe, Pill, Calendar as CalendarIcon, CheckCircle, AlertTriangle } from "lucide-react";
 
+type ReminderType = "vaccine" | "medication" | "appointment" | "other";
+
+interface Reminder {
+  id: string;
+  type: ReminderType;
+  title: string;
+  date: string;
+  petId: string;
+  notes: string;
+  completed: boolean;
+}
+
 const ReminderPage = () => {
   const { pets, reminders, addReminder, updateReminder, deleteReminder } = usePet();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [reminderData, setReminderData] = useState({
+  const [reminderData, setReminderData] = useState<{
+    type: ReminderType;
+    title: string;
+    date: string;
+    notes: string;
+    petId: string;
+    completed: boolean;
+  }>({
     type: "vaccine",
     title: "",
     date: "",
@@ -26,9 +45,9 @@ const ReminderPage = () => {
     petId: "",
     completed: false,
   });
-  const [selectedReminder, setSelectedReminder] = useState(null);
+  const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editReminderData, setEditReminderData] = useState({
+  const [editReminderData, setEditReminderData] = useState<Reminder>({
     id: "",
     type: "vaccine",
     title: "",
@@ -37,8 +56,8 @@ const ReminderPage = () => {
     petId: "",
     completed: false,
   });
-  const [completedReminders, setCompletedReminders] = useState([]);
-  const [pendingReminders, setPendingReminders] = useState([]);
+  const [completedReminders, setCompletedReminders] = useState<Reminder[]>([]);
+  const [pendingReminders, setPendingReminders] = useState<Reminder[]>([]);
 
   useEffect(() => {
     setCompletedReminders(reminders.filter(r => r.completed));
@@ -83,7 +102,7 @@ const ReminderPage = () => {
     });
   };
 
-  const handleEditReminder = (reminder) => {
+  const handleEditReminder = (reminder: Reminder) => {
     setSelectedReminder(reminder);
     setEditReminderData({
       id: reminder.id,
@@ -107,15 +126,7 @@ const ReminderPage = () => {
       return;
     }
 
-    updateReminder({
-      id: editReminderData.id,
-      type: editReminderData.type,
-      title: editReminderData.title,
-      date: editReminderData.date,
-      notes: editReminderData.notes || "",
-      petId: editReminderData.petId,
-      completed: editReminderData.completed,
-    });
+    updateReminder(editReminderData);
 
     setIsEditModalOpen(false);
     toast({
@@ -124,7 +135,7 @@ const ReminderPage = () => {
     });
   };
 
-  const handleDeleteReminder = (id) => {
+  const handleDeleteReminder = (id: string) => {
     deleteReminder(id);
     toast({
       title: "Lembrete excluído",
@@ -132,16 +143,14 @@ const ReminderPage = () => {
     });
   };
 
-  const handleCompleteToggle = (id, completed) => {
-    updateReminder({
-      id: id,
-      type: editReminderData.type,
-      title: editReminderData.title,
-      date: editReminderData.date,
-      notes: editReminderData.notes || "",
-      petId: editReminderData.petId,
-      completed: completed,
-    });
+  const handleCompleteToggle = (id: string, completed: boolean) => {
+    const reminderToUpdate = reminders.find(r => r.id === id);
+    if (reminderToUpdate) {
+      updateReminder({
+        ...reminderToUpdate,
+        completed: completed,
+      });
+    }
   };
 
   return (

@@ -35,13 +35,13 @@ export const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="bg-gradient-to-r from-primary to-[#F97316] rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110">
+              <div className="bg-gradient-to-r from-primary to-accent rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110">
                 <div className="text-white flex items-center justify-center">
                   <Dog className="w-6 h-6 absolute transition-opacity duration-300 group-hover:opacity-0" />
                   <Cat className="w-6 h-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </div>
               </div>
-              <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-primary to-[#F97316] bg-clip-text text-transparent">PetHouse</span>
+              <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">PetHouse</span>
             </Link>
           </div>
 
@@ -62,13 +62,13 @@ export const Navigation = () => {
           </nav>
 
           <div className="hidden md:flex items-center">
-            <Button className="bg-gradient-to-r from-primary to-[#F97316] hover:from-primary-600 hover:to-[#EA580C] text-white">Entrar</Button>
+            <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary-600 hover:to-accent-600 text-white">Entrar</Button>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
-              className="text-gray-700 hover:text-[#F97316] transition-colors"
+              className="text-gray-700 hover:text-accent transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
             >
@@ -102,7 +102,7 @@ export const Navigation = () => {
             Assistente
           </MobileNavLink>
           <div className="pt-4">
-            <Button className="w-full bg-gradient-to-r from-primary to-[#F97316]">Entrar</Button>
+            <Button className="w-full bg-gradient-to-r from-primary to-accent">Entrar</Button>
           </div>
         </div>
       </div>
@@ -120,9 +120,9 @@ const NavLink = ({ to, isActive, children }: NavLinkProps) => {
   return (
     <Link 
       to={to}
-      className={`relative font-medium hover:text-[#F97316] transition-colors ${
+      className={`relative font-medium hover:text-accent transition-colors ${
         isActive 
-          ? 'text-[#F97316] after:content-[""] after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-1 after:bg-[#F97316]' 
+          ? 'text-accent after:content-[""] after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-1 after:bg-accent' 
           : 'text-gray-700'
       }`}
     >
@@ -144,7 +144,7 @@ const MobileNavLink = ({ to, onClick, isActive, children }: MobileNavLinkProps) 
       to={to}
       className={`block px-3 py-2 rounded-md ${
         isActive 
-          ? 'bg-gradient-to-r from-primary-50 to-[#FFEDD5] text-[#F97316] font-medium border-l-4 border-[#F97316]' 
+          ? 'bg-gradient-to-r from-primary-50 to-accent-50 text-accent font-medium border-l-4 border-accent' 
           : 'hover:bg-gray-50'
       }`}
       onClick={onClick}
