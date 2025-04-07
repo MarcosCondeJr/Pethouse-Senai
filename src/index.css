@@ -25,7 +25,7 @@
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16% 47%;
 
-    --accent: 24 100% 72%;
+    --accent: 24 100% 62%;
     --accent-foreground: 222.2 47% 11%;
 
     --destructive: 0 84% 60%;
@@ -118,5 +118,102 @@
   
   .btn-accent {
     @apply bg-accent hover:bg-accent-600 text-white font-medium rounded-md px-4 py-2 transition-colors;
+  }
+
+  .pet-card {
+    @apply relative overflow-hidden rounded-xl border-2 transition-all duration-200;
+  }
+
+  .pet-card:hover {
+    @apply shadow-xl transform -translate-y-1;
+  }
+
+  .pet-card.dog {
+    @apply border-primary;
+  }
+
+  .pet-card.cat {
+    @apply border-[#F97316];
+  }
+
+  .pet-card.other {
+    @apply border-accent;
+  }
+
+  .pet-card:after {
+    content: "";
+    @apply absolute bottom-0 left-0 w-full h-1 transform scale-x-0 transition-transform duration-300;
+  }
+
+  .pet-card:hover:after {
+    @apply transform scale-x-100;
+  }
+
+  .pet-card.dog:after {
+    @apply bg-primary;
+  }
+
+  .pet-card.cat:after {
+    @apply bg-[#F97316];
+  }
+
+  .pet-card.other:after {
+    @apply bg-accent;
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@layer utilities {
+  .animate-bounce-slow {
+    animation: bounce-slow 3s ease-in-out infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 4s ease-in-out infinite;
   }
 }

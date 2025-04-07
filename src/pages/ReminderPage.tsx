@@ -1,422 +1,458 @@
-
-import { useState } from "react";
-import { usePet, Reminder } from "@/contexts/PetContext";
-import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { Plus, Bell, Check } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { usePet } from "@/contexts/PetContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-
-// Schema de validação para o formulário de lembrete
-const reminderFormSchema = z.object({
-  petId: z.string({
-    required_error: "Selecione um pet",
-  }),
-  type: z.enum(["vaccine", "appointment", "medication"], {
-    required_error: "Selecione um tipo",
-  }),
-  title: z.string().min(2, "O título deve ter pelo menos 2 caracteres"),
-  date: z.string().min(1, "A data é obrigatória"),
-  notes: z.string().optional(),
-});
-
-type ReminderFormValues = z.infer<typeof reminderFormSchema>;
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "@/components/ui/use-toast";
+import { useState, useEffect } from "react";
+import { Dog, Cat, Syringe, Pill, Calendar as CalendarIcon, CheckCircle, AlertTriangle } from "lucide-react";
 
 const ReminderPage = () => {
-  const { pets, reminders, addReminder, updateReminder, deleteReminder, completeReminder } = usePet();
-  const [isOpen, setIsOpen] = useState(false);
-  const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
-  const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
-
-  const form = useForm<ReminderFormValues>({
-    resolver: zodResolver(reminderFormSchema),
-    defaultValues: {
-      petId: "",
-      type: "appointment",
-      title: "",
-      date: new Date().toISOString().split('T')[0],
-      notes: "",
-    },
+  const { pets, reminders, addReminder, updateReminder, deleteReminder } = usePet();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [reminderData, setReminderData] = useState({
+    type: "vaccine",
+    title: "",
+    date: "",
+    notes: "",
+    petId: "",
+    completed: false,
   });
+  const [selectedReminder, setSelectedReminder] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editReminderData, setEditReminderData] = useState({
+    id: "",
+    type: "vaccine",
+    title: "",
+    date: "",
+    notes: "",
+    petId: "",
+    completed: false,
+  });
+  const [completedReminders, setCompletedReminders] = useState([]);
+  const [pendingReminders, setPendingReminders] = useState([]);
 
-  const openAddDialog = () => {
-    form.reset({
-      petId: pets.length > 0 ? pets[0].id : "",
-      type: "appointment",
-      title: "",
-      date: new Date().toISOString().split('T')[0],
-      notes: "",
+  useEffect(() => {
+    setCompletedReminders(reminders.filter(r => r.completed));
+    setPendingReminders(reminders.filter(r => !r.completed));
+  }, [reminders]);
+
+  const handleAddReminder = () => {
+    // Validate required fields
+    if (!reminderData.type || !reminderData.title || !reminderData.date || !reminderData.petId) {
+      toast({
+        title: "Erro ao adicionar lembrete",
+        description: "Tipo, título, data e pet são campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create reminder with required fields
+    addReminder({
+      completed: false,
+      type: reminderData.type,
+      title: reminderData.title,
+      date: reminderData.date,
+      notes: reminderData.notes || "",
+      petId: reminderData.petId,
     });
-    setEditingReminder(null);
-    setIsOpen(true);
+
+    // Reset form and close dialog
+    setReminderData({
+      type: "vaccine",
+      title: "",
+      date: "",
+      notes: "",
+      petId: "",
+      completed: false,
+    });
+    setIsDialogOpen(false);
+
+    toast({
+      title: "Lembrete adicionado",
+      description: "O lembrete foi adicionado com sucesso.",
+    });
   };
 
-  const openEditDialog = (reminder: Reminder) => {
-    form.reset({
-      petId: reminder.petId,
+  const handleEditReminder = (reminder) => {
+    setSelectedReminder(reminder);
+    setEditReminderData({
+      id: reminder.id,
       type: reminder.type,
       title: reminder.title,
       date: reminder.date,
-      notes: reminder.notes || "",
+      notes: reminder.notes,
+      petId: reminder.petId,
+      completed: reminder.completed,
     });
-    setEditingReminder(reminder);
-    setIsOpen(true);
+    setIsEditModalOpen(true);
   };
 
-  const onSubmit = (values: ReminderFormValues) => {
-    if (editingReminder) {
-      updateReminder(editingReminder.id, values);
-    } else {
-      addReminder({
-        ...values,
-        completed: false,
+  const handleUpdateReminder = () => {
+    if (!editReminderData.type || !editReminderData.title || !editReminderData.date || !editReminderData.petId) {
+      toast({
+        title: "Erro ao atualizar lembrete",
+        description: "Tipo, título, data e pet são campos obrigatórios.",
+        variant: "destructive",
       });
+      return;
     }
-    setIsOpen(false);
+
+    updateReminder({
+      id: editReminderData.id,
+      type: editReminderData.type,
+      title: editReminderData.title,
+      date: editReminderData.date,
+      notes: editReminderData.notes || "",
+      petId: editReminderData.petId,
+      completed: editReminderData.completed,
+    });
+
+    setIsEditModalOpen(false);
+    toast({
+      title: "Lembrete atualizado",
+      description: "O lembrete foi atualizado com sucesso.",
+    });
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Tem certeza que deseja remover este lembrete?")) {
-      deleteReminder(id);
-    }
+  const handleDeleteReminder = (id) => {
+    deleteReminder(id);
+    toast({
+      title: "Lembrete excluído",
+      description: "O lembrete foi excluído com sucesso.",
+    });
   };
 
-  const handleComplete = (id: string) => {
-    completeReminder(id);
-  };
-
-  // Filtragem de lembretes
-  const filteredReminders = reminders.filter(reminder => {
-    if (filter === "all") return true;
-    if (filter === "pending") return !reminder.completed;
-    if (filter === "completed") return reminder.completed;
-    return true;
-  });
-
-  // Ordenar por data (mais próximo primeiro)
-  const sortedReminders = [...filteredReminders].sort((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
-  });
-
-  // Função para verificar se um lembrete está atrasado
-  const isOverdue = (date: string) => {
-    const reminderDate = new Date(date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return reminderDate < today;
-  };
-
-  // Função para encontrar o nome do pet pelo ID
-  const getPetName = (petId: string) => {
-    const pet = pets.find(p => p.id === petId);
-    return pet ? pet.name : "Pet desconhecido";
-  };
-
-  // Traduzir o tipo do lembrete
-  const translateType = (type: string) => {
-    switch (type) {
-      case "vaccine": return "Vacina";
-      case "appointment": return "Consulta";
-      case "medication": return "Medicamento";
-      default: return type;
-    }
+  const handleCompleteToggle = (id, completed) => {
+    updateReminder({
+      id: id,
+      type: editReminderData.type,
+      title: editReminderData.title,
+      date: editReminderData.date,
+      notes: editReminderData.notes || "",
+      petId: editReminderData.petId,
+      completed: completed,
+    });
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div>
       <Navigation />
-      <main className="flex-1 py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Lembretes</h1>
-            <div className="flex flex-wrap gap-2">
-              <div className="flex rounded-md overflow-hidden">
-                <button 
-                  className={`px-4 py-2 ${filter === "all" ? "bg-primary text-white" : "bg-gray-200"}`}
-                  onClick={() => setFilter("all")}
-                >
-                  Todos
-                </button>
-                <button 
-                  className={`px-4 py-2 ${filter === "pending" ? "bg-primary text-white" : "bg-gray-200"}`}
-                  onClick={() => setFilter("pending")}
-                >
-                  Pendentes
-                </button>
-                <button 
-                  className={`px-4 py-2 ${filter === "completed" ? "bg-primary text-white" : "bg-gray-200"}`}
-                  onClick={() => setFilter("completed")}
-                >
-                  Concluídos
-                </button>
-              </div>
-              
-              <Button onClick={openAddDialog}>
-                <Plus className="mr-2 h-4 w-4" />
-                Novo Lembrete
-              </Button>
-            </div>
-          </div>
-
-          {reminders.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed rounded-xl">
-              <Bell className="mx-auto h-16 w-16 text-gray-400" />
-              <h3 className="mt-4 text-lg font-semibold">Nenhum lembrete</h3>
-              <p className="text-gray-500 mt-2">
-                Adicione lembretes para acompanhar as necessidades de saúde dos seus pets.
-              </p>
-              <Button variant="outline" onClick={openAddDialog} className="mt-4">
-                Criar Lembrete
-              </Button>
-            </div>
-          ) : sortedReminders.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed rounded-xl">
-              <Check className="mx-auto h-16 w-16 text-green-500" />
-              <h3 className="mt-4 text-lg font-semibold">Nenhum lembrete {filter === "pending" ? "pendente" : "concluído"}</h3>
-              <p className="text-gray-500 mt-2">
-                {filter === "pending" 
-                  ? "Todos os seus lembretes foram concluídos. Parabéns!" 
-                  : "Você ainda não concluiu nenhum lembrete."}
-              </p>
-              {filter !== "all" && (
-                <Button variant="outline" onClick={() => setFilter("all")} className="mt-4">
-                  Ver Todos
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Pet</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Observações</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedReminders.map((reminder) => (
-                    <TableRow key={reminder.id} className={reminder.completed ? "bg-gray-50" : ""}>
-                      <TableCell>
-                        {reminder.completed ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <Check className="mr-1 h-3 w-3" />
-                            Concluído
-                          </span>
-                        ) : isOverdue(reminder.date) ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            Atrasado
-                          </span>
+      <main className="container mx-auto py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Lembretes</h1>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>Adicionar Lembrete</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Adicionar Lembrete</DialogTitle>
+                <DialogDescription>
+                  Adicione um novo lembrete para o seu pet.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="type" className="text-right">
+                    Tipo
+                  </Label>
+                  <Select onValueChange={(value) => setReminderData({ ...reminderData, type: value })} defaultValue={reminderData.type} >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="vaccine">Vacina</SelectItem>
+                      <SelectItem value="medication">Medicação</SelectItem>
+                      <SelectItem value="appointment">Consulta</SelectItem>
+                      <SelectItem value="other">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="title" className="text-right">
+                    Título
+                  </Label>
+                  <Input
+                    type="text"
+                    id="title"
+                    value={reminderData.title}
+                    onChange={(e) => setReminderData({ ...reminderData, title: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="date" className="text-right">
+                    Data
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={
+                          "col-span-3 justify-start text-left font-normal" +
+                          (reminderData.date ? "pl-3" : "text-muted-foreground")
+                        }
+                      >
+                        {reminderData.date ? (
+                          format(new Date(reminderData.date), "PPP")
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            Pendente
-                          </span>
+                          <span>Selecione a data</span>
                         )}
-                      </TableCell>
-                      <TableCell>{getPetName(reminder.petId)}</TableCell>
-                      <TableCell>{translateType(reminder.type)}</TableCell>
-                      <TableCell className="font-medium">{reminder.title}</TableCell>
-                      <TableCell>
-                        {new Date(reminder.date).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>{reminder.notes || "-"}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          {!reminder.completed && (
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="text-green-600 border-green-600"
-                              onClick={() => handleComplete(reminder.id)}
-                            >
-                              <Check className="mr-1 h-3 w-3" />
-                              Concluir
-                            </Button>
-                          )}
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => openEditDialog(reminder)}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleDelete(reminder.id)}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={reminderData.date ? new Date(reminderData.date) : undefined}
+                        onSelect={(date) => setReminderData({ ...reminderData, date: date?.toISOString() || "" })}
+                        disabled={(date) =>
+                          date > new Date()
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="pet" className="text-right">
+                    Pet
+                  </Label>
+                  <Select onValueChange={(value) => setReminderData({ ...reminderData, petId: value })} >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecione o pet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pets.map((pet) => (
+                        <SelectItem key={pet.id} value={pet.id}>{pet.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-start gap-4">
+                  <Label htmlFor="notes" className="text-right mt-2">
+                    Observações
+                  </Label>
+                  <Textarea
+                    id="notes"
+                    value={reminderData.notes}
+                    onChange={(e) => setReminderData({ ...reminderData, notes: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <Button onClick={handleAddReminder}>Adicionar Lembrete</Button>
+            </DialogContent>
+          </Dialog>
         </div>
-      </main>
 
-      {/* Formulário para adicionar/editar lembrete */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{editingReminder ? "Editar Lembrete" : "Criar Novo Lembrete"}</DialogTitle>
-            <DialogDescription>
-              Crie um lembrete para não esquecer os cuidados com seu pet.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="petId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pet*</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+        {/* Pending Reminders */}
+        {pendingReminders.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Próximos Lembretes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pendingReminders.map((reminder) => {
+                const pet = pets.find(p => p.id === reminder.petId);
+                return (
+                  <Card key={reminder.id} className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-xl font-bold">{reminder.title}</CardTitle>
+                      <Checkbox
+                        id={`complete-${reminder.id}`}
+                        checked={reminder.completed}
+                        onCheckedChange={(checked) => {
+                          handleCompleteToggle(reminder.id, checked);
+                        }}
+                      />
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600">
+                        Tipo: {reminder.type}
+                      </p>
+                      <p className="text-gray-600">
+                        Data: {new Date(reminder.date).toLocaleDateString()}
+                      </p>
+                      {pet && (
+                        <p className="text-gray-600">
+                          Pet: {pet.name} ({pet.species})
+                        </p>
+                      )}
+                    </CardContent>
+                    <div className="flex justify-end p-4">
+                      <Button variant="secondary" size="sm" onClick={() => handleEditReminder(reminder)}>
+                        Editar
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteReminder(reminder.id)}>
+                        Excluir
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Completed Reminders */}
+        {completedReminders.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Lembretes Concluídos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {completedReminders.map((reminder) => {
+                const pet = pets.find(p => p.id === reminder.petId);
+                return (
+                  <Card key={reminder.id} className="bg-gray-100 shadow-md rounded-lg overflow-hidden">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-xl font-bold line-through">{reminder.title}</CardTitle>
+                      <Checkbox
+                        id={`complete-${reminder.id}`}
+                        checked={reminder.completed}
+                        onCheckedChange={(checked) => {
+                          handleCompleteToggle(reminder.id, checked);
+                        }}
+                      />
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 line-through">
+                        Tipo: {reminder.type}
+                      </p>
+                      <p className="text-gray-600 line-through">
+                        Data: {new Date(reminder.date).toLocaleDateString()}
+                      </p>
+                      {pet && (
+                        <p className="text-gray-600 line-through">
+                          Pet: {pet.name} ({pet.species})
+                        </p>
+                      )}
+                    </CardContent>
+                    <div className="flex justify-end p-4">
+                      <Button variant="secondary" size="sm" onClick={() => handleEditReminder(reminder)}>
+                        Editar
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteReminder(reminder.id)}>
+                        Excluir
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Edit Reminder Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Editar Lembrete</DialogTitle>
+              <DialogDescription>
+                Edite os detalhes do lembrete.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="type" className="text-right">
+                  Tipo
+                </Label>
+                <Select onValueChange={(value) => setEditReminderData({ ...editReminderData, type: value })} defaultValue={editReminderData.type} >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="vaccine">Vacina</SelectItem>
+                    <SelectItem value="medication">Medicação</SelectItem>
+                    <SelectItem value="appointment">Consulta</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Título
+                </Label>
+                <Input
+                  type="text"
+                  id="title"
+                  value={editReminderData.title}
+                  onChange={(e) => setEditReminderData({ ...editReminderData, title: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="date" className="text-right">
+                  Data
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={
+                        "col-span-3 justify-start text-left font-normal" +
+                        (editReminderData.date ? "pl-3" : "text-muted-foreground")
+                      }
                     >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um pet" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {pets.map(pet => (
-                          <SelectItem key={pet.id} value={pet.id}>
-                            {pet.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo*</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="vaccine">Vacina</SelectItem>
-                        <SelectItem value="appointment">Consulta</SelectItem>
-                        <SelectItem value="medication">Medicamento</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Título*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: Vacina Antirrábica, Consulta de Rotina" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data*</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Observações</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Observações adicionais" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <DialogFooter>
-                <Button type="submit">{editingReminder ? "Salvar Alterações" : "Criar Lembrete"}</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-      
-      <Footer />
+                      {editReminderData.date ? (
+                        format(new Date(editReminderData.date), "PPP")
+                      ) : (
+                        <span>Selecione a data</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={editReminderData.date ? new Date(editReminderData.date) : undefined}
+                      onSelect={(date) => setEditReminderData({ ...editReminderData, date: date?.toISOString() || "" })}
+                      disabled={(date) =>
+                        date > new Date()
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="pet" className="text-right">
+                  Pet
+                </Label>
+                <Select onValueChange={(value) => setEditReminderData({ ...editReminderData, petId: value })} defaultValue={editReminderData.petId} >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Selecione o pet" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pets.map((pet) => (
+                      <SelectItem key={pet.id} value={pet.id}>{pet.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="notes" className="text-right mt-2">
+                  Observações
+                </Label>
+                <Textarea
+                  id="notes"
+                  value={editReminderData.notes}
+                  onChange={(e) => setEditReminderData({ ...editReminderData, notes: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <Button onClick={handleUpdateReminder}>Atualizar Lembrete</Button>
+          </DialogContent>
+        </Dialog>
+      </main>
     </div>
   );
 };

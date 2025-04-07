@@ -1,369 +1,249 @@
-
 import { useState, useEffect } from "react";
-import { usePet, Pet, Vaccine } from "@/contexts/PetContext";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { usePet } from "@/contexts/PetContext";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { Plus, ArrowDown, ArrowUp, Syringe } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-
-// Schema de validação para o formulário de vacina
-const vaccineFormSchema = z.object({
-  name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),
-  date: z.string().min(1, "A data é obrigatória"),
-  nextDate: z.string().optional(),
-  veterinarian: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-type VaccineFormValues = z.infer<typeof vaccineFormSchema>;
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/use-toast";
 
 const VaccinationCardPage = () => {
-  const { petId } = useParams();
-  const navigate = useNavigate();
-  const { pets, addVaccine, updateVaccine, deleteVaccine } = usePet();
-  const [currentPet, setCurrentPet] = useState<Pet | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [editingVaccine, setEditingVaccine] = useState<Vaccine | null>(null);
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof Vaccine;
-    direction: 'ascending' | 'descending';
-  } | null>(null);
-
-  const form = useForm<VaccineFormValues>({
-    resolver: zodResolver(vaccineFormSchema),
-    defaultValues: {
-      name: "",
-      date: new Date().toISOString().split('T')[0],
-      nextDate: "",
-      veterinarian: "",
-      notes: "",
-    },
+  const { petId } = useParams<{ petId: string }>();
+  const { pets, addVaccine } = usePet();
+  const [pet, setPet] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [vaccineData, setVaccineData] = useState({
+    name: "",
+    date: "",
+    nextDate: "",
+    veterinarian: "",
+    notes: "",
   });
 
-  // Encontrar o pet atual
   useEffect(() => {
-    if (petId) {
-      const pet = pets.find(p => p.id === petId);
-      if (pet) {
-        setCurrentPet(pet);
-      } else {
-        navigate("/pets");
-      }
-    } else if (pets.length > 0) {
-      setCurrentPet(pets[0]);
+    if (petId && pets) {
+      const foundPet = pets.find((p) => p.id === petId);
+      setPet(foundPet);
     }
-  }, [petId, pets, navigate]);
+  }, [petId, pets]);
 
-  const openAddDialog = () => {
-    form.reset({
+  if (!pet) {
+    return (
+      <div className="container mx-auto p-4">
+        <h2 className="text-2xl font-bold mb-4">Carteira de Vacinação</h2>
+        <p>Pet não encontrado. <Link to="/pets" className="text-blue-500">Voltar para a lista de pets</Link>.</p>
+      </div>
+    );
+  }
+
+  const handleAddVaccine = () => {
+    // Validate required fields
+    if (!vaccineData.name || !vaccineData.date) {
+      toast({
+        title: "Erro ao adicionar vacina",
+        description: "Nome e data são campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Add vaccine with required fields
+    addVaccine(pet.id, {
+      name: vaccineData.name,
+      date: vaccineData.date,
+      nextDate: vaccineData.nextDate || "",
+      veterinarian: vaccineData.veterinarian || "",
+      notes: vaccineData.notes || "",
+    });
+
+    // Reset form and close dialog
+    setVaccineData({
       name: "",
-      date: new Date().toISOString().split('T')[0],
+      date: "",
       nextDate: "",
       veterinarian: "",
       notes: "",
     });
-    setEditingVaccine(null);
-    setIsOpen(true);
-  };
+    setIsDialogOpen(false);
 
-  const openEditDialog = (vaccine: Vaccine) => {
-    form.reset({
-      name: vaccine.name,
-      date: vaccine.date,
-      nextDate: vaccine.nextDate || "",
-      veterinarian: vaccine.veterinarian || "",
-      notes: vaccine.notes || "",
+    toast({
+      title: "Vacina adicionada",
+      description: "A vacina foi adicionada com sucesso.",
     });
-    setEditingVaccine(vaccine);
-    setIsOpen(true);
   };
 
-  const onSubmit = (values: VaccineFormValues) => {
-    if (!currentPet) return;
-    
-    if (editingVaccine) {
-      updateVaccine(currentPet.id, editingVaccine.id, values);
-    } else {
-      addVaccine(currentPet.id, values);
-    }
-    setIsOpen(false);
-  };
+  const VaccineForm = () => {
+    const [date, setDate] = useState<Date>();
+    const [nextDate, setNextDate] = useState<Date>();
 
-  const handleDelete = (vaccineId: string) => {
-    if (!currentPet) return;
-    
-    if (confirm("Tem certeza que deseja remover este registro de vacina?")) {
-      deleteVaccine(currentPet.id, vaccineId);
-    }
+    return (
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="name" className="text-right">
+            Nome
+          </Label>
+          <Input id="name" value={vaccineData.name} onChange={(e) => setVaccineData({ ...vaccineData, name: e.target.value })} className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="date" className="text-right">
+            Data
+          </Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={
+                  "col-span-3 pl-3 font-normal " +
+                  (date ? "text-foreground" : "text-muted-foreground")
+                }
+              >
+                {date ? format(date, "PPP") : <span>Escolher Data</span>}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                onDayClick={(date) => {
+                  setDate(date);
+                  setVaccineData({ ...vaccineData, date: date.toISOString() });
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="nextDate" className="text-right">
+            Próxima Dose
+          </Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={
+                  "col-span-3 pl-3 font-normal " +
+                  (nextDate ? "text-foreground" : "text-muted-foreground")
+                }
+              >
+                {nextDate ? format(nextDate, "PPP") : <span>Escolher Data</span>}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={nextDate}
+                onSelect={setNextDate}
+                onDayClick={(nextDate) => {
+                  setNextDate(nextDate);
+                  setVaccineData({ ...vaccineData, nextDate: nextDate.toISOString() });
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="veterinarian" className="text-right">
+            Veterinário
+          </Label>
+          <Input id="veterinarian" value={vaccineData.veterinarian} onChange={(e) => setVaccineData({ ...vaccineData, veterinarian: e.target.value })} className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-start gap-4">
+          <Label htmlFor="notes" className="text-right mt-2">
+            Observações
+          </Label>
+          <Textarea id="notes" value={vaccineData.notes} onChange={(e) => setVaccineData({ ...vaccineData, notes: e.target.value })} className="col-span-3" />
+        </div>
+      </div>
+    );
   };
-
-  // Função para ordenar as vacinas
-  const handleSort = (key: keyof Vaccine) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const sortedVaccines = currentPet ? [...currentPet.vaccines].sort((a, b) => {
-    if (!sortConfig) return 0;
-    
-    if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? -1 : 1;
-    }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? 1 : -1;
-    }
-    return 0;
-  }) : [];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
-      <main className="flex-1 py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Carteira de Vacinação</h1>
-              {currentPet && <p className="text-gray-600">Pet: {currentPet.name}</p>}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {pets.length > 1 && (
-                <select 
-                  className="px-3 py-2 border rounded-md"
-                  value={currentPet?.id || ""}
-                  onChange={(e) => navigate(`/vaccination-card/${e.target.value}`)}
-                >
-                  {pets.map(pet => (
-                    <option key={pet.id} value={pet.id}>
-                      {pet.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-              
-              {currentPet && (
-                <Button onClick={openAddDialog}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Nova Vacina
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {!currentPet && (
-            <div className="text-center py-12 border-2 border-dashed rounded-xl">
-              <Syringe className="mx-auto h-16 w-16 text-gray-400" />
-              <h3 className="mt-4 text-lg font-semibold">Nenhum pet cadastrado</h3>
-              <p className="text-gray-500 mt-2">Adicione um pet primeiro para registrar suas vacinas.</p>
-              <Link to="/pets">
-                <Button variant="outline" className="mt-4">
-                  Adicionar Pet
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          {currentPet && currentPet.vaccines.length === 0 && (
-            <div className="text-center py-12 border-2 border-dashed rounded-xl">
-              <Syringe className="mx-auto h-16 w-16 text-gray-400" />
-              <h3 className="mt-4 text-lg font-semibold">Nenhuma vacina registrada</h3>
-              <p className="text-gray-500 mt-2">Registre as vacinas do seu pet para manter seu histórico atualizado.</p>
-              <Button variant="outline" onClick={openAddDialog} className="mt-4">
-                Registrar Vacina
-              </Button>
-            </div>
-          )}
-
-          {currentPet && currentPet.vaccines.length > 0 && (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="cursor-pointer" onClick={() => handleSort('name')}>
-                      <div className="flex items-center">
-                        Vacina
-                        {sortConfig?.key === 'name' && (
-                          sortConfig.direction === 'ascending' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => handleSort('date')}>
-                      <div className="flex items-center">
-                        Data
-                        {sortConfig?.key === 'date' && (
-                          sortConfig.direction === 'ascending' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead>Próxima Dose</TableHead>
-                    <TableHead>Veterinário</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedVaccines.map((vaccine) => (
-                    <TableRow key={vaccine.id}>
-                      <TableCell className="font-medium">{vaccine.name}</TableCell>
-                      <TableCell>{new Date(vaccine.date).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        {vaccine.nextDate 
-                          ? new Date(vaccine.nextDate).toLocaleDateString()
-                          : "Não programada"}
-                      </TableCell>
-                      <TableCell>{vaccine.veterinarian || "-"}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => openEditDialog(vaccine)}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleDelete(vaccine.id)}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+    <div className="container mx-auto p-4">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold">{pet.name} - Carteira de Vacinação</h2>
+          <p className="text-gray-500">Gerencie as vacinas do seu pet.</p>
         </div>
-      </main>
+        <Link to="/pets">
+          <Button variant="outline">Voltar para Meus Pets</Button>
+        </Link>
+      </div>
 
-      {/* Formulário para adicionar/editar vacina */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Vacinas Registradas</CardTitle>
+          <CardDescription>Lista de todas as vacinas registradas para {pet.name}.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {pet.vaccines && pet.vaccines.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vacina
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Data
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Próxima Dose
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Veterinário
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Observações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {pet.vaccines.map((vaccine, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{vaccine.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{vaccine.date ? new Date(vaccine.date).toLocaleDateString() : 'N/A'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{vaccine.nextDate ? new Date(vaccine.nextDate).toLocaleDateString() : 'N/A'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{vaccine.veterinarian || 'N/A'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{vaccine.notes || 'N/A'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>Nenhuma vacina registrada para este pet.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button className="mt-4">Adicionar Vacina</Button>
+        </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{editingVaccine ? "Editar Vacina" : "Adicionar Vacina"}</DialogTitle>
+            <DialogTitle>Adicionar Nova Vacina</DialogTitle>
             <DialogDescription>
-              Registre os dados da vacinação do seu pet.
+              Adicione uma nova vacina à carteira de vacinação de {pet.name}.
             </DialogDescription>
           </DialogHeader>
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome da Vacina*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: Antirrábica, V10" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data da Aplicação*</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="nextDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data da Próxima Dose</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="veterinarian"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Veterinário Responsável</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nome do veterinário" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Observações</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Observações sobre a vacina" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <DialogFooter>
-                <Button type="submit">{editingVaccine ? "Salvar Alterações" : "Registrar Vacina"}</Button>
-              </DialogFooter>
-            </form>
-          </Form>
+          <VaccineForm />
+          <Button className="mt-4" onClick={handleAddVaccine}>
+            Salvar Vacina
+          </Button>
         </DialogContent>
       </Dialog>
-      
-      <Footer />
     </div>
   );
 };

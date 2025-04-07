@@ -1,308 +1,276 @@
-
-import { useState } from "react";
-import { usePet, Pet } from "@/contexts/PetContext";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Plus, Edit, Dog } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+import { usePet } from "@/contexts/PetContext";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-
-// Schema de validação para o formulário
-const petFormSchema = z.object({
-  name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),
-  species: z.enum(["dog", "cat", "other"], {
-    required_error: "Selecione uma espécie",
-  }),
-  breed: z.string().optional(),
-  birthdate: z.string().optional(),
-  weight: z.number().positive().optional(),
-  gender: z.enum(["male", "female"], {
-    required_error: "Selecione o gênero",
-  }),
-});
-
-type PetFormValues = z.infer<typeof petFormSchema>;
+import { toast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Dog, Cat } from "lucide-react";
 
 const PetsPage = () => {
-  const { pets, addPet, updatePet, deletePet } = usePet();
-  const [isOpen, setIsOpen] = useState(false);
-  const [editingPet, setEditingPet] = useState<Pet | null>(null);
-
-  const form = useForm<PetFormValues>({
-    resolver: zodResolver(petFormSchema),
-    defaultValues: {
-      name: "",
-      species: "dog",
-      breed: "",
-      birthdate: "",
-      weight: undefined,
-      gender: "male",
-    },
+  const { pets, addPet, deletePet } = usePet();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newPet, setNewPet] = useState({
+    name: "",
+    species: "dog",
+    breed: "",
+    birthdate: "",
+    weight: 0,
+    gender: "male",
   });
 
-  const openAddDialog = () => {
-    form.reset();
-    setEditingPet(null);
-    setIsOpen(true);
+  const [petToDelete, setPetToDelete] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const handleOpenDeleteDialog = (petId: string) => {
+    setPetToDelete(petId);
+    setIsDeleteDialogOpen(true);
   };
 
-  const openEditDialog = (pet: Pet) => {
-    form.reset({
-      name: pet.name,
-      species: pet.species,
-      breed: pet.breed || "",
-      birthdate: pet.birthdate || "",
-      weight: pet.weight,
-      gender: pet.gender,
+  const handleCloseDeleteDialog = () => {
+    setPetToDelete(null);
+    setIsDeleteDialogOpen(false);
+  };
+
+  const confirmDeletePet = () => {
+    if (petToDelete) {
+      deletePet(petToDelete);
+      toast({
+        title: "Pet removido",
+        description: "O pet foi removido com sucesso.",
+      });
+      handleCloseDeleteDialog();
+    }
+  };
+
+const handleAddPet = () => {
+  // Validate required fields
+  if (!newPet.name || !newPet.species) {
+    toast({
+      title: "Erro ao adicionar pet",
+      description: "Nome e espécie são campos obrigatórios.",
+      variant: "destructive",
     });
-    setEditingPet(pet);
-    setIsOpen(true);
-  };
+    return;
+  }
+  
+  // Create the pet with required fields
+  addPet({
+    name: newPet.name,
+    species: newPet.species,
+    breed: newPet.breed || "",
+    birthdate: newPet.birthdate || "",
+    weight: newPet.weight || 0,
+    gender: newPet.gender || "male",
+  });
+  
+  // Reset form and close dialog
+  setNewPet({
+    name: "",
+    species: "dog",
+    breed: "",
+    birthdate: "",
+    weight: 0,
+    gender: "male",
+  });
+  setIsDialogOpen(false);
+  
+  toast({
+    title: "Pet adicionado com sucesso",
+    description: `${newPet.name} foi adicionado à sua lista de pets.`,
+  });
+};
 
-  const onSubmit = (values: PetFormValues) => {
-    if (editingPet) {
-      updatePet(editingPet.id, values);
-    } else {
-      addPet(values);
-    }
-    setIsOpen(false);
-  };
+  const PetCard = ({ pet }: { pet: any }) => {
+    const getPetBorderClass = () => {
+      switch (pet.species) {
+        case "dog":
+          return "pet-card dog";
+        case "cat":
+          return "pet-card cat";
+        default:
+          return "pet-card other";
+      }
+    };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Tem certeza que deseja remover este pet? Todos os registros associados serão perdidos.")) {
-      deletePet(id);
-    }
+    return (
+      <Card className={getPetBorderClass()}>
+        <CardHeader>
+          <CardTitle>{pet.name}</CardTitle>
+          <CardDescription>
+            {pet.species === "dog" ? "Cachorro" : pet.species === "cat" ? "Gato" : "Outro"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Raça: {pet.breed || "Não informada"}</p>
+          <p>Data de Nascimento: {pet.birthdate ? new Date(pet.birthdate).toLocaleDateString() : "Não informada"}</p>
+          <p>Peso: {pet.weight || "Não informado"} kg</p>
+          <p>Gênero: {pet.gender === "male" ? "Macho" : "Fêmea"}</p>
+        </CardContent>
+        <div className="flex justify-between p-4">
+          <Link to={`/vaccination-card/${pet.id}`}>
+            <Button variant="secondary">Carteira de Vacinação</Button>
+          </Link>
+          <Button variant="destructive" onClick={() => handleOpenDeleteDialog(pet.id)}>
+            Remover
+          </Button>
+        </div>
+      </Card>
+    );
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
-      <main className="flex-1 py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Meus Pets</h1>
-            <Button onClick={openAddDialog}>
-              <Plus className="mr-2 h-4 w-4" />
-              Adicionar Pet
-            </Button>
-          </div>
-
-          {pets.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed rounded-xl">
-              <Dog className="mx-auto h-16 w-16 text-gray-400" />
-              <h3 className="mt-4 text-lg font-semibold">Nenhum pet cadastrado</h3>
-              <p className="text-gray-500 mt-2">Adicione seu primeiro pet para começar a gerenciar sua saúde.</p>
-              <Button variant="outline" onClick={openAddDialog} className="mt-4">
-                Adicionar Pet
-              </Button>
+    <div className="container mx-auto py-12">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Meus Pets</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>Adicionar Pet</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Adicionar um novo pet</DialogTitle>
+              <DialogDescription>
+                Preencha o formulário abaixo para adicionar um novo pet à sua lista.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Nome
+                </Label>
+                <Input
+                  type="text"
+                  id="name"
+                  value={newPet.name}
+                  onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="species" className="text-right">
+                  Espécie
+                </Label>
+                <Select onValueChange={(value) => setNewPet({ ...newPet, species: value })} defaultValue={newPet.species}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Selecione a espécie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dog">Cachorro</SelectItem>
+                    <SelectItem value="cat">Gato</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="breed" className="text-right">
+                  Raça
+                </Label>
+                <Input
+                  type="text"
+                  id="breed"
+                  value={newPet.breed}
+                  onChange={(e) => setNewPet({ ...newPet, breed: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="birthdate" className="text-right">
+                  Data de Nascimento
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "col-span-3 pl-3 font-normal text-left",
+                        !newPet.birthdate && "text-muted-foreground"
+                      )}
+                    >
+                      {newPet.birthdate ? format(new Date(newPet.birthdate), "PPP") : <span>Selecione a data</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="center" side="bottom">
+                    <Calendar
+                      mode="single"
+                      selected={newPet.birthdate ? new Date(newPet.birthdate) : undefined}
+                      onSelect={(date) => setNewPet({ ...newPet, birthdate: date?.toISOString() || "" })}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="weight" className="text-right">
+                  Peso (kg)
+                </Label>
+                <Input
+                  type="number"
+                  id="weight"
+                  value={newPet.weight ? newPet.weight.toString() : ""}
+                  onChange={(e) => setNewPet({ ...newPet, weight: parseFloat(e.target.value) })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="gender" className="text-right">
+                  Gênero
+                </Label>
+                <Select onValueChange={(value) => setNewPet({ ...newPet, gender: value })} defaultValue={newPet.gender}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Selecione o gênero" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Macho</SelectItem>
+                    <SelectItem value="female">Fêmea</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pets.map((pet) => (
-                <Card key={pet.id} className="overflow-hidden">
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-semibold">{pet.name}</h3>
-                      <div className="flex space-x-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(pet)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <p><strong>Espécie:</strong> {pet.species === "dog" ? "Cachorro" : pet.species === "cat" ? "Gato" : "Outro"}</p>
-                      {pet.breed && <p><strong>Raça:</strong> {pet.breed}</p>}
-                      {pet.birthdate && <p><strong>Data de Nascimento:</strong> {new Date(pet.birthdate).toLocaleDateString()}</p>}
-                      {pet.weight && <p><strong>Peso:</strong> {pet.weight} kg</p>}
-                      <p><strong>Gênero:</strong> {pet.gender === "male" ? "Macho" : "Fêmea"}</p>
-                      <p><strong>Vacinas:</strong> {pet.vaccines.length}</p>
-                    </div>
-                    
-                    <div className="mt-6 flex space-x-3">
-                      <Link to={`/vaccination-card/${pet.id}`} className="flex-1">
-                        <Button variant="outline" className="w-full">Carteira de Vacinas</Button>
-                      </Link>
-                      <Button 
-                        variant="destructive" 
-                        size="icon" 
-                        onClick={() => handleDelete(pet.id)}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+            <Button onClick={handleAddPet}>Adicionar Pet</Button>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-      {/* Formulário para adicionar/editar pet */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {pets.map((pet) => (
+          <PetCard key={pet.id} pet={pet} />
+        ))}
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{editingPet ? "Editar Pet" : "Adicionar Novo Pet"}</DialogTitle>
+            <DialogTitle>Remover Pet</DialogTitle>
             <DialogDescription>
-              Preencha os dados do seu pet. Todos os campos com * são obrigatórios.
+              Tem certeza de que deseja remover este pet? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nome do pet" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="species"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Espécie*</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a espécie" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="dog">Cachorro</SelectItem>
-                        <SelectItem value="cat">Gato</SelectItem>
-                        <SelectItem value="other">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="breed"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Raça</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Raça do pet" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="birthdate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data de Nascimento</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Peso (kg)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.1" 
-                        placeholder="Peso em kg"
-                        value={field.value || ''} 
-                        onChange={e => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gênero*</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o gênero" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="male">Macho</SelectItem>
-                        <SelectItem value="female">Fêmea</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <DialogFooter>
-                <Button type="submit">{editingPet ? "Salvar Alterações" : "Adicionar Pet"}</Button>
-              </DialogFooter>
-            </form>
-          </Form>
+          <div className="flex justify-end space-x-2">
+            <Button variant="ghost" onClick={handleCloseDeleteDialog}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={confirmDeletePet}>
+              Remover
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
-      
-      <Footer />
     </div>
   );
 };
