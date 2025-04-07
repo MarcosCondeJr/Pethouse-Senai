@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 export const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-b from-blue-50 to-white py-16 md:py-24">
+    <section className="relative bg-[#f4a905] from-blue-50 to-white py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col gap-6 animate-fade-in">
@@ -28,7 +28,7 @@ export const Hero = () => {
             <div className="relative w-full max-w-md">
               <div className="absolute inset-0 bg-primary rounded-full blur-3xl opacity-20"></div>
               <img
-                src="https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60"
+                src="https://i.pinimg.com/736x/8a/45/27/8a4527146a4964aaca9577c96d259044.jpg"
                 alt="Gato fofo"
                 className="relative z-10 w-full h-auto object-cover rounded-3xl shadow-lg animate-bounce-slow"
               />
