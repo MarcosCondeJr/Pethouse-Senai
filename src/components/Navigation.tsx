@@ -37,7 +37,6 @@ export const Navigation = () => {
             <Link to="/pets" className="hover:text-primary font-medium">Meus Pets</Link>
             <Link to="/reminders" className="hover:text-primary font-medium">Lembretes</Link>
             <Link to="/assistant" className="hover:text-primary font-medium">Assistente</Link>
-            <a href="#features" className="hover:text-primary font-medium">Recursos</a>
           </nav>
 
           <div className="hidden md:flex items-center">

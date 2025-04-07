@@ -14,10 +14,10 @@ export const CallToAction = () => {
             Junte-se a milhares de tutores que já melhoraram a saúde e o bem-estar de seus pets com nossa plataforma
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-gray-100">
+            <Button size="lg" variant="outline" className="border-white text-primary hover:bg-white/10">
               Criar conta gratuita
             </Button>
-            <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+            <Button size="lg" variant="outline" className="text-primary border-white hover:bg-white/10">
               Saber mais
             </Button>
           </div>

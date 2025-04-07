@@ -19,37 +19,37 @@ export const Guides = () => {
             title="Sinais de Alerta na Saúde do Pet"
             description="Aprenda a identificar quando seu pet precisa de atendimento veterinário urgente"
             category="Saúde"
-            image="https://images.unsplash.com/photo-1582378313039-4edc984c6e58?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
+            image="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           />
           <GuideCard 
             title="Nutrição Adequada por Fase da Vida"
             description="O que seu animal de estimação deve comer em cada estágio da vida"
             category="Alimentação"
-            image="https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
+            image="https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGV0c3xlbnwwfHwwfHx8MA%3D%3D"
           />
           <GuideCard 
             title="Parasitas Comuns: Prevenção e Tratamento"
             description="Como proteger seu pet contra pulgas, carrapatos e vermes"
             category="Prevenção"
-            image="https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
+            image="https://images.unsplash.com/photo-1548366086-7f1b76106622?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nzl8fHBldHN8ZW58MHx8MHx8fDA%3D"
           />
           <GuideCard 
             title="Comportamento Animal: Entendendo seu Pet"
             description="Interpretando os sinais que seu pet demonstra através do comportamento"
             category="Comportamento"
-            image="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
+            image="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGV0c3xlbnwwfHwwfHx8MA%3D%3D"
           />
           <GuideCard 
             title="Primeiros Socorros para Pets"
             description="O que fazer em situações de emergência até chegar ao veterinário"
             category="Emergências"
-            image="https://images.unsplash.com/photo-1531212691140-3df3440be45f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
+            image="https://plus.unsplash.com/premium_photo-1683134234977-96fabca0ba59?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           />
           <GuideCard 
             title="Exercícios e Atividades por Raça"
             description="Atividades ideais para manter seu pet saudável conforme suas características"
             category="Atividade Física"
-            image="https://images.unsplash.com/photo-1595229742896-2c6faae6b4e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
+            image="https://images.unsplash.com/photo-1518882174711-1de40238921b?q=80&w=1926&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           />
         </div>
 
