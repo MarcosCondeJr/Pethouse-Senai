@@ -1,11 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Check, Dog, Syringe } from "lucide-react";
-
 export const Reminders = () => {
-  return (
-    <section className="py-20 bg-gray-50" id="reminders">
+  return <section className="py-20 bg-gray-50" id="reminders">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Sistema de Lembretes Inteligentes</h2>
@@ -16,10 +13,10 @@ export const Reminders = () => {
 
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
           <Tabs defaultValue="vaccines" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="vaccines" className="text-sm md:text-base">Vacinas</TabsTrigger>
-              <TabsTrigger value="medications" className="text-sm md:text-base">Medicamentos</TabsTrigger>
-              <TabsTrigger value="appointments" className="text-sm md:text-base">Consultas</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 mb-8 bg-[acc] bg-accent-500">
+              <TabsTrigger value="vaccines" className="text-sm md:text-base text-gray-950 bg-[a] bg-accent-500 hover:bg-accent-400">Vacinas</TabsTrigger>
+              <TabsTrigger value="medications" className="text-sm md:text-base bg-gray-50 text-gray-950">Medicamentos</TabsTrigger>
+              <TabsTrigger value="appointments" className="text-sm md:text-base text-gray-950 bg-gray-50">Consultas</TabsTrigger>
             </TabsList>
             
             <TabsContent value="vaccines" className="mt-4">
@@ -44,11 +41,7 @@ export const Reminders = () => {
                 </div>
                 <div className="relative rounded-xl overflow-hidden">
                   <div className="bg-primary/10 absolute inset-0"></div>
-                  <img 
-                    src="https://images.unsplash.com/photo-1452378174528-3090a4bba7b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                    alt="Calendário de vacinas" 
-                    className="w-full h-auto object-cover relative z-10 rounded-xl"
-                  />
+                  <img src="https://images.unsplash.com/photo-1452378174528-3090a4bba7b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Calendário de vacinas" className="w-full h-auto object-cover relative z-10 rounded-xl" />
                 </div>
               </div>
             </TabsContent>
@@ -136,26 +129,14 @@ export const Reminders = () => {
                   </div>
                   <div className="grid grid-cols-7 gap-1 text-sm">
                     {[...Array(31)].map((_, i) => {
-                      if (i < 3) return <span key={i} className="p-2"></span>; // Empty cells
-                      const day = i - 2;
-                      const isConsultation = day === 15;
-                      const isToday = day === 6;
-                      
-                      return (
-                        <span 
-                          key={i}
-                          className={`p-2 rounded-full flex items-center justify-center ${
-                            isConsultation 
-                              ? "bg-accent text-white" 
-                              : isToday 
-                                ? "border border-primary text-primary" 
-                                : ""
-                          }`}
-                        >
+                    if (i < 3) return <span key={i} className="p-2"></span>; // Empty cells
+                    const day = i - 2;
+                    const isConsultation = day === 15;
+                    const isToday = day === 6;
+                    return <span key={i} className={`p-2 rounded-full flex items-center justify-center ${isConsultation ? "bg-accent text-white" : isToday ? "border border-primary text-primary" : ""}`}>
                           {day}
-                        </span>
-                      );
-                    })}
+                        </span>;
+                  })}
                   </div>
                   <div className="mt-4 text-sm">
                     <div className="flex items-center gap-2">
@@ -169,19 +150,16 @@ export const Reminders = () => {
           </Tabs>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 interface ListItemProps {
   text: string;
 }
-
-const ListItem = ({ text }: ListItemProps) => (
-  <li className="flex items-start gap-2">
+const ListItem = ({
+  text
+}: ListItemProps) => <li className="flex items-start gap-2">
     <span className="mt-1">
       <Check className="h-5 w-5 text-green-500" />
     </span>
-    <span>{text}</span>
-  </li>
-);
+    <span className="text-[a] text-accent-500">{text}</span>
+  </li>;
