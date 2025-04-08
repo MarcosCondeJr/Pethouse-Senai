@@ -20,14 +20,15 @@ export const Navigation = () => {
   const isActive = (path: string) => {
     return location.pathname === path;
   };
-  const navClasses = scrolled ? "transition-all duration-300" : " backdrop-blur-sm transition-all duration-300";
+  const navClasses = scrolled ? "transition-all duration-300 bg-gray-100" : " backdrop-blur-sm transition-all duration-300 bg-orange-500";
+  const styleClass = scrolled ? "bg-gray-100" : "bg-gray-100";
   return <header className={`sticky top-0 z-40 ${navClasses}`}>
       <div className="container mx-auto px-4 py-3">
-        <div className="flex justify-between items-center h-16 bg-gray-50 rounded-sm">
+        <div className={`flex justify-between items-center h-16 rounded-sm ${styleClass}`}>
         <div className="flex items-center">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="bg-transparent rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110">
-              <div className="text-orange-600 flex items-center justify-center">
+              <div className = "text-orange-600 flex items-center justify-center">
                 <Dog className="w-6 h-6 absolute transition-opacity duration-300 group-hover:opacity-0" />
                 <Cat className="w-6 h-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </div>

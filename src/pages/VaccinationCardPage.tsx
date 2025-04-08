@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Navigation } from "@/components/Navigation";
 import { useParams, Link } from "react-router-dom";
 import { usePet } from "@/contexts/PetContext";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-
+import { Footer } from "@/components/Footer";
+ 
 const VaccinationCardPage = () => {
   const { petId } = useParams<{ petId: string }>();
   const { pets, addVaccine } = usePet();
@@ -169,6 +171,8 @@ const VaccinationCardPage = () => {
   };
 
   return (
+    <div>
+      <Navigation />
     <div className="container mx-auto p-4">
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -244,6 +248,8 @@ const VaccinationCardPage = () => {
           </Button>
         </DialogContent>
       </Dialog>
+    </div>
+        <Footer />
     </div>
   );
 };
