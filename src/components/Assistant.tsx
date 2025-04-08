@@ -1,12 +1,9 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-
 export const Assistant = () => {
-  return (
-    <section className="py-20 bg-gradient-to-b from-white to-blue-50" id="assistant">
+  return <section id="assistant" className="py-20 bg-gradient-to-b from-white to-blue-50 bg-slate-50">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
@@ -32,23 +29,23 @@ export const Assistant = () => {
             <div className="p-6 bg-white">
               <div className="space-y-4 mb-6">
                 <div className="bg-gray-100 p-4 rounded-lg max-w-[80%]">
-                  <p className="text-sm font-medium mb-1">Pet House Assistant</p>
-                  <p>Olá! Como posso ajudar você e seu pet hoje?</p>
+                  <p className="text-sm font-medium mb-1 text-slate-700">Pet House Assistant</p>
+                  <p className="text-gray-800">Olá! Como posso ajudar você e seu pet hoje?</p>
                 </div>
 
                 <div className="bg-primary/10 p-4 rounded-lg max-w-[80%] ml-auto">
-                  <p className="text-sm font-medium mb-1">Você</p>
-                  <p>Meu cachorro está vomitando desde ontem</p>
+                  <p className="text-sm font-medium mb-1 text-slate-700">Você</p>
+                  <p className="font-normal text-gray-800">Meu cachorro está vomitando desde ontem</p>
                 </div>
 
                 <div className="bg-gray-100 p-4 rounded-lg max-w-[80%]">
-                  <p className="text-sm font-medium mb-1">Pet House Assistant</p>
-                  <p>Entendi. Vamos avaliar a situação. Poderia me responder algumas perguntas para entender melhor o que está acontecendo?</p>
+                  <p className="text-sm font-medium mb-1 text-slate-700">Pet House Assistant</p>
+                  <p className="text-gray-900">Entendi. Vamos avaliar a situação. Poderia me responder algumas perguntas para entender melhor o que está acontecendo?</p>
                 </div>
                 
                 <div className="bg-gray-100 p-4 rounded-lg max-w-[80%]">
-                  <p className="text-sm font-medium mb-1">Pet House Assistant</p>
-                  <p>Com que frequência seu pet está vomitando? O vômito contém sangue ou é de alguma cor incomum?</p>
+                  <p className="text-sm font-medium mb-1 text-gray-700">Pet House Assistant</p>
+                  <p className="font-normal text-base text-gray-800">Com que frequência seu pet está vomitando? O vômito contém sangue ou é de alguma cor incomum?</p>
                 </div>
               </div>
 
@@ -83,35 +80,24 @@ export const Assistant = () => {
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <InfoCard
-              title="Avaliação de Sintomas"
-              description="Questionários inteligentes para entender o que pode estar acontecendo com seu pet"
-            />
-            <InfoCard
-              title="Orientação Imediata"
-              description="Sugestões sobre cuidados iniciais que podem ser tomados em casa"
-            />
-            <InfoCard
-              title="Triagem de Urgências"
-              description="Identificação de casos que exigem atendimento veterinário imediato"
-            />
+            <InfoCard title="Avaliação de Sintomas" description="Questionários inteligentes para entender o que pode estar acontecendo com seu pet" />
+            <InfoCard title="Orientação Imediata" description="Sugestões sobre cuidados iniciais que podem ser tomados em casa" />
+            <InfoCard title="Triagem de Urgências" description="Identificação de casos que exigem atendimento veterinário imediato" />
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 interface InfoCardProps {
   title: string;
   description: string;
 }
-
-const InfoCard = ({ title, description }: InfoCardProps) => {
-  return (
-    <div className="bg-white p-4 rounded-lg shadow-sm">
+const InfoCard = ({
+  title,
+  description
+}: InfoCardProps) => {
+  return <div className="bg-white p-4 rounded-lg shadow-sm">
       <h4 className="font-medium mb-2">{title}</h4>
       <p className="text-sm text-gray-600">{description}</p>
-    </div>
-  );
+    </div>;
 };
