@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 export const Hero = () => {
-  return <section className="relative bg-gradient-to-r from-accent to-accent-200 py-16 md:py-24 bg-[#ff5f00]">
+  return <section className="0 py-16 md:py-24 bg-orange-500">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col gap-6 animate-fade-in">
@@ -11,7 +11,7 @@ export const Hero = () => {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">Tudo que você precisa para cuidar do seu pet!
 
           </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-lg">
+            <p className="text-lg md:text-xl text-white/90 max-w-lg font-semibold">
               Guias informativos, lembretes de vacinas e assistente virtual para ajudar você a cuidar melhor do seu animal de estimação.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">

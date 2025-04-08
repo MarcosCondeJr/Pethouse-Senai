@@ -20,21 +20,22 @@ export const Navigation = () => {
   const isActive = (path: string) => {
     return location.pathname === path;
   };
-  const navClasses = scrolled ? "bg-white shadow-md border-b transition-all duration-300" : "bg-white/90 backdrop-blur-sm border-b transition-all duration-300";
+  const navClasses = scrolled ? "transition-all duration-300" : " backdrop-blur-sm transition-all duration-300";
   return <header className={`sticky top-0 z-40 ${navClasses}`}>
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16 bg-gray-50">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="bg-gradient-to-r from-primary to-accent rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110">
-                <div className="text-white flex items-center justify-center">
-                  <Dog className="w-6 h-6 absolute transition-opacity duration-300 group-hover:opacity-0 bg-slate-500" />
-                  <Cat className="w-6 h-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                </div>
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex justify-between items-center h-16 bg-gray-50 rounded-sm">
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="bg-transparent rounded-full w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110">
+              <div className="text-orange-600 flex items-center justify-center">
+                <Dog className="w-6 h-6 absolute transition-opacity duration-300 group-hover:opacity-0" />
+                <Cat className="w-6 h-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </div>
-              <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">PetHouse</span>
-            </Link>
-          </div>
+            </div>
+            <span className="font-bold text-2xl tracking-tight text-blue-700">PetHouse</span>
+          </Link>
+        </div>
+
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8 text-gray-700">
@@ -53,7 +54,7 @@ export const Navigation = () => {
           </nav>
 
           <div className="hidden md:flex items-center">
-            <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary-600 hover:to-accent-600 text-white">Entrar</Button>
+            <Button className="bg-orange-500 from-primary mr-4 to-accent hover:from-primary-600 hover:bg-blue-700 text-white">Entrar</Button>
           </div>
 
           {/* Mobile menu button */}
@@ -81,7 +82,7 @@ export const Navigation = () => {
             Assistente
           </MobileNavLink>
           <div className="pt-4">
-            <Button className="w-full bg-gradient-to-r from-primary to-accent">Entrar</Button>
+            <Button className="bg-orange-600">Entrar</Button>
           </div>
         </div>
       </div>
@@ -97,7 +98,7 @@ const NavLink = ({
   isActive,
   children
 }: NavLinkProps) => {
-  return <Link to={to} className={`relative font-medium hover:text-accent transition-colors ${isActive ? 'text-accent after:content-[""] after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-1 after:bg-accent' : 'text-gray-700'}`}>
+  return <Link to={to} className={`relative font-medium hover:text-orange-500 transition-colors ${isActive ? 'text-orange-500 after:content-[""] after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-1 after:bg-accent' : 'text-blue-700'}`}>
       {children}
     </Link>;
 };

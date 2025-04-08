@@ -111,7 +111,6 @@ const handleAddPet = () => {
 
     return (
       <Card className={getPetBorderClass()}>
-        <Navigation />
         <CardHeader>
           <CardTitle>{pet.name}</CardTitle>
           <CardDescription>
@@ -131,14 +130,15 @@ const handleAddPet = () => {
           <Button variant="destructive" onClick={() => handleOpenDeleteDialog(pet.id)}>
             Remover
           </Button>
-          <Footer />
         </div>
       </Card>
     );
   };
 
   return (
-    <div className="container mx-auto py-12">
+    <div>
+      <Navigation />
+    <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Meus Pets</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -275,6 +275,8 @@ const handleAddPet = () => {
           </div>
         </DialogContent>
       </Dialog>
+    </div>
+    <Footer />
     </div>
   );
 };
