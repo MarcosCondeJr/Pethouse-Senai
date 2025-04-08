@@ -125,7 +125,7 @@ const handleAddPet = () => {
         </CardContent>
         <div className="flex justify-between p-4">
           <Link to={`/vaccination-card/${pet.id}`}>
-            <Button variant="secondary">Carteira de Vacinação</Button>
+            <Button className="bg-blue-600">Carteira de Vacinação</Button>
           </Link>
           <Button variant="destructive" onClick={() => handleOpenDeleteDialog(pet.id)}>
             Remover
@@ -138,12 +138,12 @@ const handleAddPet = () => {
   return (
     <div>
       <Navigation />
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto py-12">
+      <div className="flex justify-between items-center mb-28">
         <h1 className="text-3xl font-bold">Meus Pets</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>Adicionar Pet</Button>
+            <Button className="bg-blue-600">Adicionar Pet</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -245,7 +245,7 @@ const handleAddPet = () => {
                 </Select>
               </div>
             </div>
-            <Button onClick={handleAddPet}>Adicionar Pet</Button>
+            <Button onClick={handleAddPet} className="bg-blue-600">Adicionar Pet</Button>
           </DialogContent>
         </Dialog>
       </div>

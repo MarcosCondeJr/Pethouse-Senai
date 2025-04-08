@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 export const Assistant = () => {
-  return <section id="assistant" className="py-20 bg-gradient-to-b from-white to-blue-50 bg-slate-50">
+  return <section id="assistant" className="py-20 bg-gradient-to-b from-white to-blue-50 bg-b">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
@@ -14,7 +14,7 @@ export const Assistant = () => {
           </div>
 
           <Card className="rounded-xl shadow-lg overflow-hidden">
-            <div className="bg-primary p-6 text-white">
+            <div className="bg-blue-500 p-6 text-white">
               <div className="flex items-center gap-3 mb-4">
                 <div className="bg-white/20 p-2 rounded-full">
                   <MessageCircle className="h-6 w-6" />

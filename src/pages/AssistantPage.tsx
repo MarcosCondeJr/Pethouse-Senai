@@ -167,7 +167,7 @@ const AssistantPage = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-6">Assistente Virtual Pet House</h1>
             
             <Card className="mb-6">
-              <div className="bg-primary p-6 text-white">
+              <div className="bg-blue-500 p-6 text-white">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="bg-white/20 p-2 rounded-full">
                     <MessageCircle className="h-6 w-6" />
@@ -242,7 +242,7 @@ const AssistantPage = () => {
                     disabled={isProcessing}
                   />
                   <Button 
-                    className="self-end" 
+                    className="self-end bg-blue-500" 
                     onClick={handleSendMessage}
                     disabled={!inputMessage.trim() || isProcessing}
                   >

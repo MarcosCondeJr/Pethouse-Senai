@@ -21,7 +21,7 @@ export const Guides = () => {
         </div>
 
         <div className="text-center mt-10">
-          <Button className="bg-secondary hover:bg-secondary-600 gap-2">
+          <Button className="bg-blue-600 hover:bg-orange-600 gap-2">
             Ver todos os guias
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -52,10 +52,10 @@ const GuideCard = ({
       </div>
       <CardHeader className="pb-2 bg-slate-50">
         <div className="flex items-center gap-2 mb-2">
-          <Book className="h-4 w-4 text-primary" />
-          <p className="text-sm text-primary font-medium">Guia Informativo</p>
+          <Book className="h-4 w-4 text-blue-600" />
+          <p className="text-sm text-blue-600 font-medium">Guia Informativo</p>
         </div>
-        <CardTitle className="text-xl text-[#f4a905]">{title}</CardTitle>
+        <CardTitle className="text-xl text-orange-500">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="bg-gray-50">

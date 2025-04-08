@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { usePet } from "@/contexts/PetContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -156,12 +157,12 @@ const ReminderPage = () => {
   return (
     <div>
       <Navigation />
-      <main className="container mx-auto py-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="container mx-auto py-12">
+        <div className="flex justify-between items-center mb-28">
           <h1 className="text-3xl font-bold">Lembretes</h1>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>Adicionar Lembrete</Button>
+              <Button className="bg-blue-600">Adicionar Lembrete</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
@@ -260,7 +261,7 @@ const ReminderPage = () => {
                   />
                 </div>
               </div>
-              <Button onClick={handleAddReminder}>Adicionar Lembrete</Button>
+              <Button onClick={handleAddReminder} className="bg-blue-600">Adicionar Lembrete</Button>
             </DialogContent>
           </Dialog>
         </div>
@@ -297,8 +298,8 @@ const ReminderPage = () => {
                         </p>
                       )}
                     </CardContent>
-                    <div className="flex justify-end p-4">
-                      <Button variant="secondary" size="sm" onClick={() => handleEditReminder(reminder)}>
+                    <div className="flex justify-end p-4 gap-2">
+                      <Button className="bg-blue-600" size="sm" onClick={() => handleEditReminder(reminder)}>
                         Editar
                       </Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteReminder(reminder.id)}>
@@ -461,7 +462,8 @@ const ReminderPage = () => {
             <Button onClick={handleUpdateReminder}>Atualizar Lembrete</Button>
           </DialogContent>
         </Dialog>
-      </main>
+      </div>
+      <Footer />
     </div>
   );
 };
