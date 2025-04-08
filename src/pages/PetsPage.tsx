@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { usePet } from "@/contexts/PetContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -109,6 +111,7 @@ const handleAddPet = () => {
 
     return (
       <Card className={getPetBorderClass()}>
+        <Navigation />
         <CardHeader>
           <CardTitle>{pet.name}</CardTitle>
           <CardDescription>
@@ -128,6 +131,7 @@ const handleAddPet = () => {
           <Button variant="destructive" onClick={() => handleOpenDeleteDialog(pet.id)}>
             Remover
           </Button>
+          <Footer />
         </div>
       </Card>
     );
