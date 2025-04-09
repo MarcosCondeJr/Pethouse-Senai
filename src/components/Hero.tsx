@@ -36,7 +36,7 @@ export const Hero = () => {
       {/* Floating stats cards */}
       <div className="container mx-auto px-4 -mb-24">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-          <StatCard number="30%" text="Das consultas emergenciais poderiam ser evitadas com orientação adequada" color="primary" />
+          <StatCard number="30%" text="Das consultas emergenciais poderiam ser evitadas com orientação adequada" color="blue" />
           <StatCard number="25%" text="Aumento na adesão aos calendários de vacinação com nosso sistema" color="secondary" />
           <StatCard number="40%" text="Redução em custos com tratamentos que poderiam ser evitados" color="accent" />
         </div>
@@ -54,9 +54,9 @@ const StatCard = ({
   color
 }: StatCardProps) => {
   const bgColor = {
-    primary: "bg-primary",
-    secondary: "bg-secondary",
-    accent: "bg-accent"
+    blue: "bg-blue-500",
+    secondary: "bg-green-400",
+    accent: "bg-orange-500"
   };
   return <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center card-hover border-t-4 border-t-accent">
       <div className={`${bgColor[color]} rounded-full w-16 h-16 flex items-center justify-center mb-4`}>

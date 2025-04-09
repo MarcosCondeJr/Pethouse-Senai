@@ -23,7 +23,7 @@ export const Features = () => {
             icon={<Book className="h-12 w-12 text-secondary" />}
             title="Educação Acessível"
             description="Guias informativos com curadoria de especialistas sobre sinais de alerta, cuidados básicos e mitos da saúde animal."
-            color="secondary"
+            color=""
           />
           <FeatureCard
             icon={<MessageCircle className="h-12 w-12 text-accent" />}
@@ -52,9 +52,9 @@ const FeatureCard = ({ icon, title, description, color }: FeatureCardProps) => {
   };
 
   const bgColor = {
-    primary: "bg-primary-50",
-    secondary: "bg-secondary-50",
-    accent: "bg-accent-50",
+    primary: "bg-blue-500",
+    secondary: "bg-green-500",
+    accent: "bg-orange-500",
   };
 
   return (
