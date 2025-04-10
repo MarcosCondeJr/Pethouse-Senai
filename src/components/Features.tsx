@@ -14,22 +14,22 @@ export const Features = () => {
 
         <div className="grid md:grid-cols-3 gap-8">
           <FeatureCard
-            icon={<Bell className="h-12 w-12 text-primary" />}
+            icon={<Bell className="h-12 w-12 text-blue-500" />}
             title="Gestão Proativa"
             description="Lembretes automatizados de vacinação e vermifugação, personalizados por espécie, raça e idade, enviados por e-mail ou SMS."
-            color="primary"
+            color="blue"
           />
           <FeatureCard
-            icon={<Book className="h-12 w-12 text-secondary" />}
+            icon={<Book className="h-12 w-12 text-green-400" />}
             title="Educação Acessível"
             description="Guias informativos com curadoria de especialistas sobre sinais de alerta, cuidados básicos e mitos da saúde animal."
-            color=""
+            color="green"
           />
           <FeatureCard
-            icon={<MessageCircle className="h-12 w-12 text-accent" />}
+            icon={<MessageCircle className="h-12 w-12 text-orange-500" />}
             title="Assistente Virtual"
             description="Questionários dinâmicos para avaliar sintomas e sugerir ações imediatas, além de triagem de urgências."
-            color="accent"
+            color="orange"
           />
         </div>
       </div>
@@ -41,20 +41,20 @@ interface FeatureCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
-  color: "primary" | "secondary" | "accent";
+  color: "blue" | "green" | "orange";
 }
 
 const FeatureCard = ({ icon, title, description, color }: FeatureCardProps) => {
   const borderColor = {
-    primary: "border-primary",
-    secondary: "border-secondary",
-    accent: "border-accent",
+    blue: "border-blue-500",
+    green: "border-green-400",
+    orange: "border-orange-500",
   };
 
   const bgColor = {
-    primary: "bg-blue-500",
-    secondary: "bg-green-500",
-    accent: "bg-orange-500",
+    blue: "bg-blue-500",
+    green: "bg-green-500",
+    orange: "bg-orange-500",
   };
 
   return (
