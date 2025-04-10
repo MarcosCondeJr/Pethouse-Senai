@@ -76,7 +76,7 @@ const Index = () => {
                 </div>
                 
                 <Link to="/pets">
-                  <Button className="w-full mt-4">
+                  <Button className="w-full mt-4 bg-blue-500">
                     {pets.length === 0 ? "Adicionar Pet" : "Gerenciar Pets"}
                   </Button>
                 </Link>
@@ -106,7 +106,7 @@ const Index = () => {
                 )}
                 
                 <Link to={pets.length > 0 ? `/vaccination-card/${pets[0].id}` : "/pets"}>
-                  <Button variant="outline" className="w-full mt-4">
+                  <Button variant="secondary" className="w-full mt-4 bg-green-400">
                     {pets.length === 0 ? "Adicionar Pet" : "Ver Carteira de Vacinas"}
                   </Button>
                 </Link>
@@ -141,7 +141,7 @@ const Index = () => {
                 </div>
                 
                 <Link to="/reminders">
-                  <Button variant="secondary" className="w-full mt-4">
+                  <Button variant="outline" className="w-full mt-4 bg-orange-500 text-white">
                     {reminders.length === 0 ? "Criar Lembretes" : "Gerenciar Lembretes"}
                   </Button>
                 </Link>
@@ -165,7 +165,7 @@ const Index = () => {
                 </div>
                 
                 <Link to="/assistant">
-                  <Button className="w-full">
+                  <Button className="w-full bg-blue-500">
                     Conversar com o Assistente
                   </Button>
                 </Link>
