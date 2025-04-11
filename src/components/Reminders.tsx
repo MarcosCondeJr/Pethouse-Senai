@@ -13,17 +13,33 @@ export const Reminders = () => {
 
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
           <Tabs defaultValue="vaccines" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 bg-[acc] bg-accent-500">
-              <TabsTrigger value="vaccines" className="text-sm md:text-base text-gray-950 bg-[a] bg-accent-500 hover:bg-accent-400">Vacinas</TabsTrigger>
-              <TabsTrigger value="medications" className="text-sm md:text-base bg-gray-50 text-gray-950">Medicamentos</TabsTrigger>
-              <TabsTrigger value="appointments" className="text-sm md:text-base text-gray-950 bg-gray-50">Consultas</TabsTrigger>
-            </TabsList>
+          <TabsList className="flex justify-between items-center w-full bg-orange-500 p-1 rounded-lg mb-10">
+
+          <TabsTrigger
+            value="vaccines"
+            className="flex-1 text-center text-sm md:text-base text-white rounded-md py-1 transition-colors data-[state=active]:bg-white data-[state=active]:text-orange-500"
+          >
+            Vacinas
+          </TabsTrigger>
+          <TabsTrigger
+            value="medications"
+            className="flex-1 text-center text-sm md:text-base text-white rounded-md py-1 transition-colors data-[state=active]:bg-white data-[state=active]:text-orange-500"
+          >
+            Medicamentos
+          </TabsTrigger>
+          <TabsTrigger
+            value="appointments"
+            className="flex-1 text-center text-sm md:text-base text-white rounded-md py-1 transition-colors data-[state=active]:bg-white data-[state=active]:text-orange-500"
+          >
+            Consultas
+          </TabsTrigger>
+        </TabsList>
             
             <TabsContent value="vaccines" className="mt-4">
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <Syringe className="h-6 w-6 text-primary" />
+                    <Syringe className="h-6 w-6 text-blue-500" />
                     Lembretes de Vacinação
                   </h3>
                   <p className="text-gray-600 mb-6">
@@ -35,7 +51,7 @@ export const Reminders = () => {
                     <ListItem text="Histórico completo de vacinação" />
                     <ListItem text="Informações detalhadas sobre cada vacina" />
                   </ul>
-                  <Button className="bg-primary hover:bg-primary-600">
+                  <Button className="bg-blue-500 hover:bg-blue-600">
                     Configurar lembretes
                   </Button>
                 </div>
@@ -50,7 +66,7 @@ export const Reminders = () => {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <Dog className="h-6 w-6 text-secondary" />
+                    <Dog className="h-6 w-6 text-green-400" />
                     Controle de Medicamentos
                   </h3>
                   <p className="text-gray-600 mb-6">
@@ -62,7 +78,7 @@ export const Reminders = () => {
                     <ListItem text="Registro de dosagens e períodos" />
                     <ListItem text="Instruções de administração" />
                   </ul>
-                  <Button className="bg-secondary hover:bg-secondary-600">
+                  <Button className="bg-green-400 hover:bg-green-600">
                     Gerenciar medicamentos
                   </Button>
                 </div>
@@ -96,7 +112,7 @@ export const Reminders = () => {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <Calendar className="h-6 w-6 text-accent" />
+                    <Calendar className="h-6 w-6 text-orange-500" />
                     Agendamento de Consultas
                   </h3>
                   <p className="text-gray-600 mb-6">
@@ -108,7 +124,7 @@ export const Reminders = () => {
                     <ListItem text="Histórico de consultas anteriores" />
                     <ListItem text="Recomendações baseadas em idade e raça" />
                   </ul>
-                  <Button className="bg-accent hover:bg-accent-600">
+                  <Button className="bg-orange-500 hover:bg-orange-400">
                     Agendar consultas
                   </Button>
                 </div>
@@ -161,5 +177,5 @@ const ListItem = ({
     <span className="mt-1">
       <Check className="h-5 w-5 text-green-500" />
     </span>
-    <span className="text-[a] text-accent-500">{text}</span>
+    <span className="text-[a] text-orange-500">{text}</span>
   </li>;
