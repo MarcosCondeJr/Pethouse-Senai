@@ -17,11 +17,12 @@ export const Guides = () => {
           <GuideCard title="Parasitas Comuns: Prevenção e Tratamento" description="Como proteger seu pet contra pulgas, carrapatos e vermes" category="Prevenção" image="https://images.unsplash.com/photo-1548366086-7f1b76106622?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nzl8fHBldHN8ZW58MHx8MHx8fDA%3D" />
           <GuideCard title="Comportamento Animal: Entendendo seu Pet" description="Interpretando os sinais que seu pet demonstra através do comportamento" category="Comportamento" image="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGV0c3xlbnwwfHwwfHx8MA%3D%3D" />
           <GuideCard title="Primeiros Socorros para Pets" description="O que fazer em situações de emergência até chegar ao veterinário" category="Emergências" image="https://plus.unsplash.com/premium_photo-1683134234977-96fabca0ba59?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
-          <GuideCard title="Exercícios e Atividades por Raça" description="Atividades ideais para manter seu pet saudável conforme suas características" category="Atividade Física" image="https://images.unsplash.com/photo-1518882174711-1de40238921b?q=80&w=1926&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="text-[accen] text-accent-500" />
+          <GuideCard title="Exercícios e Atividades por Raça" description="Atividades ideais para manter seu pet saudável conforme suas características" category="Atividade Física" image="https://images.unsplash.com/photo-1518882174711-1de40238921b?q=80&w=1926&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+          " />
         </div>
 
         <div className="text-center mt-10">
-          <Button className="bg-blue-600 hover:bg-orange-600 gap-2">
+          <Button className="bg-blue-600 hover:bg-orange-500 gap-2">
             Ver todos os guias
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -58,8 +59,8 @@ const GuideCard = ({
         <CardTitle className="text-xl text-orange-500">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="bg-gray-50">
-        <Button variant="outline" className="w-full">Ler guia completo</Button>
+      <CardContent >
+        <Button variant="outline" className="w-full  text-white bg-orange-500">Ler guia completo</Button>
       </CardContent>
     </Card>;
 };
